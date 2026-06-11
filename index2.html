@@ -172,17 +172,12 @@ input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appear
 .kc-v.n{color:var(--ink)}.kc-v.or{color:var(--or)}.kc-v.g{color:var(--fg)}.kc-v.r{color:var(--fr)}
 
 /* ── CPA ROW ── */
-.cpa-row{display:grid;grid-template-columns:1fr 40px 1fr;gap:8px;align-items:center;flex-shrink:0}
+.cpa-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:start;flex-shrink:0}
 .cpac{background:var(--wh);border:1px solid var(--line);border-radius:10px;padding:10px 14px;box-shadow:var(--sh)}
 .cpac-l{font-size:9px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
 .cpac-v{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.5px}
+.cpac-v.or{color:var(--or)}
 .cpac-s{font-size:10px;color:var(--g400);margin-top:2px}
-.cpa-mid{width:40px;height:40px;border-radius:50%;border:2px solid;
-  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;
-  margin:0 auto;flex-shrink:0}
-.cpa-mid.ok{border-color:var(--fg);background:var(--fgb);color:var(--fg)}
-.cpa-mid.wa{border-color:#d97706;background:rgba(217,119,6,.08);color:#d97706}
-.cpa-mid.bad{border-color:var(--fr);background:var(--frb);color:var(--fr)}
 
 /* ── FUNIL ── */
 .fn-card{background:var(--wh);border:1px solid var(--line);border-radius:10px;
@@ -236,10 +231,9 @@ input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appear
   .ct-right{order:-1}  /* funil sobe no layout 1-col */
 }
 
-/* Tablet portrait: CPA simplifica */
+/* Tablet portrait: CPA em 2 colunas */
 @media(max-width:820px){
-  .cpa-row{grid-template-columns:1fr;gap:8px}
-  .cpa-mid{display:none}
+  .cpa-row{grid-template-columns:1fr 1fr}
 }
 
 /* Mobile: app vai para 1 coluna total — calculadora primeiro, resultados depois */
@@ -261,6 +255,7 @@ input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appear
   .kpi-row{grid-template-columns:1fr}
   .cg3{grid-template-columns:1fr}
   .cg2{grid-template-columns:1fr}
+  .cpa-row{grid-template-columns:1fr}
   .content{padding:10px 10px 24px}
 }
 
@@ -446,11 +441,15 @@ input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appear
           <div class="cpac-v" id="cpa-alvo">—</div>
           <div class="cpac-s">Ponderado pelos lotes</div>
         </div>
-        <div class="cpa-mid bad" id="cpa-mid">✕</div>
         <div class="cpac">
           <div class="cpac-l">CPA Real</div>
           <div class="cpac-v" id="cpa-real">—</div>
           <div class="cpac-s" id="cpa-st">—</div>
+        </div>
+        <div class="cpac">
+          <div class="cpac-l">CPA Máximo</div>
+          <div class="cpac-v or" id="cpa-max">—</div>
+          <div class="cpac-s">3% do ticket do produto</div>
         </div>
       </div>
 
@@ -576,14 +575,13 @@ function render(d){
   tx('h-roas-cap',d.rosCap>0?ros(d.rosCap):'—');
 
   tx('cpa-alvo',d.W>0?cur(d.W):'—');
+  tx('cpa-max',d.pp>0?cur(d.pp*0.03):'—');
   if(d.W>0&&d.ingr>0){
     tx('cpa-real',cur(d.cpar));
     const ok=d.cpar<=d.W,near=d.cpar<=d.W*1.2;
     $('cpa-real').style.color=ok?'var(--fg)':near?'#d97706':'var(--fr)';
     tx('cpa-st',ok?'✅ Dentro da meta':near?'⚠️ Próximo da meta':'❌ Acima da meta');
     $('cpa-st').style.color=ok?'var(--fg)':near?'#d97706':'var(--fr)';
-    const mid=$('cpa-mid');
-    if(mid){mid.textContent=ok?'✓':near?'!':'✕';mid.className='cpa-mid '+(ok?'ok':near?'wa':'bad')}
   }else{tx('cpa-real','—');tx('cpa-st','—')}
 
   tx('fn-impr',num(d.impr));tx('fn-clic',num(d.clic));tx('fn-vis',num(d.vis));tx('fn-ini',num(d.ini));
